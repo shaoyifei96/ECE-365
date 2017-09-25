@@ -20,8 +20,6 @@ hashTable::hashTable(int size){
 int hashTable::insert(const std::string &key, void *pv){
 	//check load factor and rehash if grater than .6 rehash
 
-	//cout<<"start of insert !!!!!"<<endl;
-	//cout<<"load factor after insert="<<this->filled+1<<"/"<<this->capacity<<endl;
 	if(float(this->filled+1)/this->capacity > 0.5) {//!!!!change to 0.5//add 1 to see if capacity over when added
 		if(!rehash()) return 2;
 	}
@@ -33,15 +31,10 @@ int hashTable::insert(const std::string &key, void *pv){
 
 //two situations: doesnt exisit, or exist but deleted
 	for (int i=0; i<this->capacity ; i++){
-		//cout<<"i="<<i<<endl;
 		//where magic happens
-		//cout<<"sum of hash="<<ini_pos+shift*i<<endl;
 		int pos =(ini_pos+shift*i)%this->capacity;//every loop add one shift, not i*shift
-		//cout<<"hashpos="<<pos<<endl;
 		hashItem* item = &this->data[pos];
-		//cout<<"occupied?"<<item->isOccupied<<". deleted?"<<item->isDeleted<<endl;
 		if (item->isOccupied == 1) {
-			cout<<"cell occupied"<<endl;
 			if (item->key == key) {
 			item->isDeleted = 0;//deleted case
 			return 0;
@@ -114,11 +107,8 @@ int hashTable::findPos(const std::string &key){
 
 	for (int i=0; i<this->capacity ; i++){
 		//where magic happens
-		//cout<<"sum of hash="<<pos+i*shift<<endl;
 		int pos =(ini_pos+shift*i)%this->capacity;
-		//cout<<"hashpos="<<pos<<endl;
 		hashItem* item = &this->data[pos];
-		//cout<<"occupied?"<<item->isOccupied<<". deleted?"<<item->isDeleted<<endl;
 		if (item->isOccupied == 1) {
 			if(item->isDeleted==0){
 				if (item->key == key) return pos;
@@ -193,7 +183,6 @@ int hashTable::hash_2(const std::string &key){
 
 bool hashTable::rehash(){
 	//rehash means to iterate through everything and change size
-	cout<<"rehashinggggggg"<<endl;
 	vector<hashItem> new_data = this->data;
 	int old_cap = this->capacity;
 	int new_cap= this->getPrime(old_cap);
