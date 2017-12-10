@@ -1,12 +1,10 @@
 //hash.cpp
 #include <iostream>
 #include <climits>//for converting unsigned long
+#include <cmath> 
+#include <stdexcept>
 #include "hash.h"
-
-
 using namespace std;//may not be good idea
-
-
 
 hashTable::hashTable(int size){
 	this->capacity = this->getPrime(size);
@@ -15,21 +13,16 @@ hashTable::hashTable(int size){
 	cout<<"capacity="<<capacity<<endl;
 }
 
-
-
 int hashTable::insert(const std::string &key, void *pv){
-	//check load factor and rehash if grater than .6 rehash
-
-	if(float(this->filled+1)/this->capacity > 0.5) {//!!!!change to 0.5//add 1 to see if capacity over when added
+	//check load factor and rehash if grater than .5 rehash
+	if(float(this->filled+1)/this->capacity > 0.5) {//add 1 to see if capacity over when added
 		if(!rehash()) return 2;
 	}
 	if(this->contains(key)) return 1;
 	//get hashes first then loop
 	int ini_pos, shift;
 	this->get_hash(ini_pos, shift, key);
-	//cout<<"ini_pos="<<ini_pos<<"shift="<<shift<<endl;
 
-//two situations: doesnt exisit, or exist but deleted
 	for (int i=0; i<this->capacity ; i++){
 		//where magic happens
 		int pos =(ini_pos+shift*i)%this->capacity;//every loop add one shift, not i*shift
@@ -41,7 +34,6 @@ int hashTable::insert(const std::string &key, void *pv){
 			}
 			else continue;
 		}
-		
 		else {//item->isOccupied == 0 
 			item->key = key;
 			item->pv = pv;
@@ -52,7 +44,6 @@ int hashTable::insert(const std::string &key, void *pv){
 		}
 
 	}
-
 	//went throgh everything still not space
 	throw std::runtime_error("hashtable filled, bad");
 	
@@ -62,7 +53,6 @@ bool hashTable::contains(const std::string &key){
 	int pos = this->findPos(key);
 	if (pos == -1) return false;
 	else {
-		//cout<<"pos found to be"<<pos<<endl;
 		return true;
 	}
 	
@@ -71,11 +61,11 @@ bool hashTable::contains(const std::string &key){
 void * hashTable::getPointer(const std::string &key, bool *b){
 	int pos = this->findPos(key);
 	if (pos == -1) {
-		b=new bool(false);
+		if(b != NULL) *b=FALSE;
 		return NULL;
 	}
 	else {
-		b=new bool(true);
+		if(b != NULL) *b=TRUE;
 		return this->data[pos].pv;
 	}
 }
@@ -155,7 +145,7 @@ unsigned int hashTable::getPrime(int size){
 		,805306457
 		,1610612741};
 	for (int i=0; i < sizeof(primes); i++){
-		if (2*size < primes[i]) return primes[i];//!!!!!change this to 2 times the size
+		if (2*size < primes[i]) return primes[i];
 	}
 	throw std::runtime_error("not valid size found");
 	
@@ -171,6 +161,7 @@ int hashTable::hash (const std::string &key) {
     int int_hash = hash & INT_MAX;
 	return abs(int_hash);
     }
+    
 int hashTable::hash_2(const std::string &key){
 	const char *str = key.c_str();
 	unsigned long hash = 0;
